@@ -1,213 +1,346 @@
-# 🛡️ SecretGuard
+# 🛡️ SecretGuard CLI
 
-A simple CLI tool to detect and fix hardcoded API keys in your codebase.
+**Catch API key leaks before they reach GitHub.**
 
-## 🚀 Features
+SecretGuard is a developer-first security tool that detects, fixes, and prevents hardcoded secrets in your codebase. Using multi-layer detection (pattern matching, heuristics, entropy analysis), it finds API keys that other tools miss—and fixes them automatically.
 
-- **Scan**: Detect hardcoded API keys using regex patterns
-- **Fix**: Automatically replace keys with environment variables
-- **Clean Output**: Demo-friendly, colorful terminal output
-- **Multi-language Support**: Works with JS, TS, Python, Java, Go, Ruby, PHP, and more
+> *"The best time to catch a secret leak is before you commit."*
 
-## 📦 Installation
+---
+
+## Why SecretGuard?
+
+**The Problem:**
+- Developers accidentally commit API keys to GitHub every day
+- Once pushed, secrets remain in git history forever
+- GitHub's secret scanning only alerts *after* the damage is done
+- Manual fixes are tedious and error-prone
+
+**The Solution:**
+SecretGuard catches secrets **before they reach version control**, automatically replaces them with environment variables, and ensures your `.env` files are properly protected.
+
+## Why Not Just GitHub Secret Scanning?
+
+| Feature | GitHub Secret Scanning | SecretGuard CLI |
+|---------|----------------------|-----------------|
+| **Detection Time** | After push (too late) | Before commit ✅ |
+| **Auto-Fix** | Manual only | Automated ✅ |
+| **Preview Changes** | No | Yes ✅ |
+| **Local Workflow** | Cloud-based | Runs locally ✅ |
+| **Gitignore Safety** | No | Built-in ✅ |
+
+SecretGuard complements GitHub's scanning by catching issues earlier in your workflow.
+
+---
+
+## ✨ Features
+
+- **🔍 Multi-Layer Detection** - Pattern matching, heuristics, and entropy analysis
+- **🤖 Automated Fix** - Replaces secrets with environment variables
+- **👀 Preview Mode** - See changes before applying them
+- **🔒 Gitignore Safety** - Ensures `.env` files won't be committed
+- **⚡ Fast & Local** - No cloud dependencies, runs in seconds
+- **🎯 Smart Scanning** - Detects AWS, GitHub, Stripe, OpenAI keys and more
+- **📊 Risk Scoring** - Prioritizes critical secrets (0-100 scale)
+- **🎨 Clean Output** - Demo-friendly, readable terminal output
+
+---
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 npm install
 npm link
 ```
 
-Or run directly:
+### Basic Usage
 
 ```bash
-node index.js <command> <directory>
+# Scan for secrets
+secretguard scan .
+
+# Preview fixes
+secretguard fix . --preview
+
+# Apply fixes
+secretguard fix .
 ```
 
-## 🎯 Usage
+---
 
-### Scan for API Keys
+## 🎬 Demo
+
+Run the automated demo to see SecretGuard in action:
+
+```bash
+./demo.sh
+```
+
+**What happens:**
+1. Creates a vulnerable app with hardcoded secrets
+2. Scans and detects 6+ API keys
+3. Previews proposed changes
+4. Applies fixes automatically
+5. Verifies no secrets remain
+
+Perfect for presentations and hackathon demos!
+
+---
+
+## 📖 Usage
+
+### Scan for Secrets
 
 ```bash
 secretguard scan .
 secretguard scan ./src
 ```
 
-This will scan the specified directory and report any hardcoded API keys found.
+Recursively scans files and reports:
+- File locations
+- Secret types (AWS, GitHub, Stripe, etc.)
+- Risk levels (CRITICAL, HIGH, MEDIUM)
+- Gitignore status
 
-### Preview Changes Before Fixing
+### Preview Changes
 
 ```bash
 secretguard fix . --preview
 secretguard fix ./src -p
 ```
 
-This will show you exactly what changes will be made without modifying any files.
+Shows exactly what will change without modifying files:
+- Before/after comparison
+- Environment variables to be created
+- Files that will be modified
 
-### Fix API Keys
+### Fix Secrets
 
 ```bash
 secretguard fix .
 secretguard fix ./src
 ```
 
-This will:
-1. Replace hardcoded keys with environment variables
-2. Create a `.env` file with the actual keys
-3. Create a `.env.example` file as a template
+Automatically:
+1. Replaces hardcoded secrets with `process.env.VAR_NAME`
+2. Creates `.env` file with actual values
+3. Creates `.env.example` template for your team
+4. Updates `.gitignore` to protect `.env` files
 
-### Help
+### Get Help
 
 ```bash
 secretguard help
 ```
 
-## 🧪 Demo
+---
 
-Try it with the example file:
+## 🔍 Detection Capabilities
 
-```bash
-# Scan the example
-secretguard scan ./examples
+SecretGuard uses **three detection methods**:
 
-# Fix the example
-secretguard fix ./examples
-
-# Check the results
-cat examples/vulnerable-app.js
-cat examples/.env
-```
-
-## 🔍 Detected Patterns
-
-SecretGuard detects the following API key patterns:
-
-- Generic API Keys (`api_key`, `apiKey`, `api-secret`)
+### 1. Pattern Matching (High Confidence)
 - AWS Access Keys (`AKIA...`)
-- GitHub Tokens (`ghp_...`)
+- GitHub Tokens (`ghp_...`, `ghs_...`)
 - Stripe Keys (`sk_live_...`)
 - OpenAI Keys (`sk-...`)
+- Generic API keys
+
+### 2. Heuristic Analysis (Medium Confidence)
+- Suspicious variable names (`api_key`, `secret_key`, `auth_token`)
+- Combined with value analysis
+- Reduces false positives
+
+### 3. Entropy Analysis
+- Shannon entropy calculation
+- Detects random-looking strings
+- Catches secrets without obvious patterns
+
+---
+
+## ⚙️ How It Works
+
+```
+┌─────────────┐
+│   Scanner   │  Detects secrets using multi-layer approach
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│   Fixer     │  Replaces secrets with environment variables
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│  Reporter   │  Displays clean, actionable results
+└─────────────┘
+```
+
+### Scanner
+- Recursively scans your codebase
+- Applies pattern matching, heuristics, and entropy analysis
+- Calculates risk scores (0-100)
+- Checks gitignore safety
+
+### Fixer
+- Replaces hardcoded secrets with `process.env.VAR_NAME`
+- Generates `.env` file with actual values
+- Creates `.env.example` template
+- Updates `.gitignore` automatically
+
+### Reporter
+- Clean, minimal output
+- Color-coded risk levels
+- Gitignore audit
+- Actionable recommendations
+
+---
 
 ## 📁 Project Structure
 
 ```
 secretguard/
 ├── index.js                        # CLI entry point
-├── scanner.js                      # API key detection logic
-├── fixer.js                        # Key replacement logic
+├── scanner.js                      # Detection engine
+├── fixer.js                        # Auto-remediation
 ├── reporter.js                     # Output formatting
-├── risk-scorer.js                  # Risk assessment and scoring
-├── demo.sh                         # Automated demo script
-├── package.json                    # Project dependencies
-├── package-lock.json               # Dependency lock file
-├── .gitignore                      # Git ignore rules
+├── risk-scorer.js                  # Risk assessment
+├── demo.sh                         # Automated demo
 │
-├── examples/                       # Test files and examples
-│   ├── vulnerable-app.js           # Sample vulnerable code
-│   ├── test-detection.js           # Detection test cases
-│   ├── config.txt                  # Config file example
-│   ├── .env                        # Environment variables (generated)
-│   ├── .env.example                # Environment template
-│   ├── .gitignore                  # Example gitignore
-│   └── .github/
-│       └── workflows/
-│           └── ci.yml              # CI workflow example
+├── examples/                       # Test files
+│   ├── vulnerable-app.js
+│   ├── test-detection.js
+│   └── .github/workflows/ci.yml
 │
-├── README.md                       # Main documentation
-├── QUICKSTART.md                   # Quick start guide
-├── RISK_SCORING.md                 # Risk scoring documentation
-├── DETECTION_IMPROVEMENTS.md       # Detection enhancements
-├── GITIGNORE_SAFETY_IMPROVEMENTS.md # Gitignore safety features
-├── CLI_OUTPUT_IMPROVEMENTS.md      # CLI output improvements
-├── CLI_REFACTORING_SUMMARY.md      # CLI refactoring details
-└── ENV_FILE_EXCLUSION.md           # Environment file handling
+└── docs/                           # Documentation
+    ├── README.md
+    ├── QUICKSTART.md
+    ├── RISK_SCORING.md
+    └── DETECTION_IMPROVEMENTS.md
 ```
 
-### Core Files
+---
 
-- **index.js** - Main CLI entry point, handles commands (scan, fix, help)
-- **scanner.js** - Secret detection engine with pattern matching and heuristics
-- **fixer.js** - Automatic remediation, replaces secrets with env vars
-- **reporter.js** - Clean, formatted output for scan and fix results
-- **risk-scorer.js** - Calculates risk scores and impact assessments
+## 🎯 Supported Languages
 
-### Documentation
+SecretGuard works with:
+- JavaScript/TypeScript (`.js`, `.ts`, `.jsx`, `.tsx`)
+- Python (`.py`)
+- Java (`.java`)
+- Go (`.go`)
+- Ruby (`.rb`)
+- PHP (`.php`)
+- Shell scripts (`.sh`, `.bash`)
+- Config files (`.json`, `.yaml`, `.yml`, `.ini`, `.cfg`)
+- And more!
 
-- **README.md** - Main project documentation
-- **QUICKSTART.md** - Quick start guide for new users
-- **RISK_SCORING.md** - Risk assessment methodology
-- **DETECTION_IMPROVEMENTS.md** - Multi-layer detection approach
-- **GITIGNORE_SAFETY_IMPROVEMENTS.md** - Gitignore protection features
-- **CLI_OUTPUT_IMPROVEMENTS.md** - Output formatting improvements
-- **CLI_REFACTORING_SUMMARY.md** - CLI refactoring details
-- **ENV_FILE_EXCLUSION.md** - Environment file handling logic
+---
 
-### Demo & Examples
+## 🎨 Example Output
 
-- **demo.sh** - Automated demo script showcasing full workflow
-- **examples/** - Sample vulnerable code and test cases
-
-## ⚙️ How It Works
-
-1. **Scanner**: Recursively scans files using regex patterns to detect API keys
-2. **Fixer**: Replaces hardcoded keys with `process.env.VAR_NAME` (or language-specific equivalent)
-3. **Reporter**: Displays results in a clean, colorful format
-
-## 🎨 Output Examples
-
-### Scan Output
+### Scan Results
 ```
-🔍 SecretGuard Scan Results
-──────────────────────────────────────────────────
+🛡️  SecretGuard CLI
 
-📁 Files scanned: 5
-🔑 API keys found: 3
+Scan Summary:
+  Files scanned: 7
+  Secrets found: 6
+  Risk level: HIGH
 
-⚠️  examples/vulnerable-app.js
-   Line 8: OpenAI Key
-   Key: sk-1****************************123456
-   Suggested env var: OPENAI_API_KEY
+--- Findings ---
+
+examples/app.js
+  🔴 HIGH - AWS Access Key (line 8)
+     AKIA************MPLE
+     ⚠ Not in .gitignore
+
+--- Action ---
+💡 Run: secretguard fix <dir>
 ```
 
-### Fix Output
+### Fix Results
 ```
-✨ SecretGuard Fix Results
-──────────────────────────────────────────────────
+🛡️  SecretGuard CLI
 
-✓ Files modified: 1
-✓ Keys replaced: 3
+✓ Fix Complete
+  Files modified: 3
+  Secrets secured: 6
 
-📝 Environment variables created:
-   OPENAI_API_KEY
-   STRIPE_SECRET_KEY
-   GITHUB_TOKEN
+--- Environment Variables ---
+  AWS_ACCESS_KEY_ID
+  GITHUB_TOKEN
+  STRIPE_SECRET_KEY
 
-📄 Files created:
-   .env (contains actual keys)
-   .env.example (template for sharing)
+--- Files Created ---
+  .env (actual values)
+  .env.example (template)
 ```
+
+---
 
 ## ⚠️ Important Notes
 
-1. Always add `.env` to your `.gitignore`
-2. Review changes before committing
-3. Share `.env.example` with your team, not `.env`
-4. This tool is for demonstration purposes - always review security changes manually
+1. **Always review changes** before committing
+2. **Add `.env` to `.gitignore`** (SecretGuard does this automatically)
+3. **Share `.env.example`** with your team, not `.env`
+4. **Never commit `.env` files** to version control
+5. **Rotate exposed secrets** if they were already pushed
 
-## ⚠️ Safety Note
+---
 
-SecretGuard performs non-destructive fixes and preserves original files. Users should review changes before committing.
+## 🔒 Security Best Practices
 
-## 🏗️ Built For
+✅ **Do:**
+- Run SecretGuard before every commit
+- Use environment variables for all secrets
+- Keep `.env` files local only
+- Share `.env.example` as a template
+- Rotate secrets if exposed
 
-This project was designed for hackathons and demos, focusing on:
-- Simplicity and clarity
-- Fast implementation
-- Clean, demo-friendly output
-- No external dependencies (except chalk for colors)
+❌ **Don't:**
+- Commit `.env` files
+- Share secrets in Slack/email
+- Hardcode secrets in source code
+- Ignore SecretGuard warnings
+- Skip the preview step
+
+---
+
+## 🏗️ Built For Hackathons
+
+SecretGuard was designed with hackathons in mind:
+- **Fast setup** - Install and run in seconds
+- **Clean output** - Perfect for demos and presentations
+- **No dependencies** - Works offline (except chalk for colors)
+- **Automated demo** - `./demo.sh` showcases full workflow
+- **Well-documented** - Clear README and examples
+
+---
 
 ## 📝 License
 
 MIT
 
+---
+
 ## 🤝 Contributing
 
-This is a minimal hackathon project. Feel free to fork and extend!
+This is a hackathon project, but contributions are welcome! Feel free to:
+- Report bugs
+- Suggest features
+- Submit pull requests
+- Share feedback
+
+---
+
+## 🙏 Acknowledgments
+
+Built with ❤️ for developers who care about security.
+
+Special thanks to the open-source community for inspiration and tools.
+
+---
+
+**Made with Bob** 🤖
