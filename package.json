@@ -1,0 +1,23 @@
+{
+  "name": "secretguard-cli",
+  "version": "1.0.0",
+  "description": "SecretGuard CLI - A simple tool to detect and fix hardcoded API keys",
+  "main": "index.js",
+  "bin": {
+    "secretguard": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "security",
+    "api-keys",
+    "secrets",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
+}
